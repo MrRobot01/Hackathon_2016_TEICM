@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.MrRobot.truecolor.MainActivity"
-    tools:ignore="ContentDescription,RtlHardcoded,HardcodedText" >
+    tools:ignore="ContentDescription,RtlHardcoded,HardcodedText,UnknownIdInLayout" >
 
     <ImageView
         android:id="@+id/imageView1"
@@ -22,15 +22,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/textView2"
-        android:text="          TextView" />
+        android:text="                COLOR" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/showColorName"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:layout_alignRight="@+id/imageView1"
         android:layout_below="@+id/imageView1"
-        android:text="          TextView" />
+        android:text="          COLOR_NAME" />
 
     <ImageButton
         android:id="@+id/imageButton1"
@@ -41,10 +41,11 @@
         android:src="@drawable/capture" />
 
     <ImageButton
-        android:id="@+id/ImageButton01"
+        android:id="@+id/SaveButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignTop="@+id/imageButton1"
+        android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/imageButton1"
         android:src="@drawable/upload" />
 
