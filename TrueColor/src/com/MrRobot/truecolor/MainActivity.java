@@ -104,14 +104,10 @@ public class MainActivity extends Activity {
 					 * 	   < 340 = Magenta
 					 */
 					
-					Color.RGBToHSV(r, g, b, hsv);
 					
-				/*	if(hsv[2] < 0.1){
-						color = "black";
-					}else if(hsv[2] > 0.9){
-						color = "white";
-					}
-					*/
+					Colors c = new Colors();
+					color = c.getColor(r, g, b, hsv);
+					
 					
 					/*	if(hsv[0]>=5 && hsv[0]<=18){
 							color = "orange";
