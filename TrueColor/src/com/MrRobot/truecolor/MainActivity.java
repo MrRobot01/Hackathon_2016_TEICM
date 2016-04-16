@@ -24,7 +24,22 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         
-        int id = item.getItemId();
+    	switch(item.getItemId()){
+    	
+    	case R.id.About:
+    		
+    		break;
+    	case R.id.Help:
+    		
+    		break;
+    	case R.id.Save:
+    		
+    		break;
+    	case R.id.Share:
+    		
+    		break;
+    		
+    	}
         
         return super.onOptionsItemSelected(item);
     }
