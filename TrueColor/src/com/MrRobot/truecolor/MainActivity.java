@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
@@ -17,11 +21,14 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
+	static final int REQUEST_IMAGE_CAPTURE = 1;
 	ImageButton capture;
 	ImageButton save;
 	TextView showColorName;
 	TextView showColor;
 	ImageView image;
+	Bitmap bitmap;
+	Bitmap photo;
 	MenuItem item;
 	ShareActionProvider shareActionProvider;
 	
@@ -36,8 +43,7 @@ public class MainActivity extends Activity {
         showColorName = (TextView)findViewById(R.id.showColorName);
         showColor = (TextView)findViewById(R.id.textView1);
         image = (ImageView)findViewById(R.id.imageView1);
-        
-        
+          
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/font.otf");
         showColorName.setTypeface(font);
         
@@ -50,13 +56,50 @@ public class MainActivity extends Activity {
 		item = menu.findItem(R.id.Share);
 		shareActionProvider = (ShareActionProvider)item.getActionProvider();
         setIntent("Hello");
-        
-        
+
 		return  true;
 		
 	}
 	
+    /*check if the device has camera*/
+    private boolean hasCamera(){
+    	
+    	return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    	
+    }
+    
+    public void launchCamera(View view){
+    	/*Clear cache before action */
+    	image.invalidate();
+    	image.setImageDrawable(null);
+    	image.refreshDrawableState();
+    	image.destroyDrawingCache();
+    	bitmap = null;
+    	
+    	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    	startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    	
+    }
+    
+    
+    
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		bitmap = null;
+		
+		if(requestCode == REQUEST_IMAGE_CAPTURE){
+			Bundle extras = data.getExtras();
+			photo = (Bitmap)extras.get("data");
+			image.setImageBitmap(photo);
+			
+		}
+		
+	}
+
 	private void setIntent(String text){
 		//Post from share button
 		Intent intent = new Intent(Intent.ACTION_SEND);

@@ -39,6 +39,7 @@
         android:layout_height="50dp"
         android:layout_alignLeft="@+id/imageView1"
         android:layout_alignTop="@+id/textView1"
+        android:onClick="launchCamera"
         android:src="@drawable/capture" />
 
     <ImageButton
