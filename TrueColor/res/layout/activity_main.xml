@@ -37,8 +37,15 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignLeft="@+id/imageView1"
-        android:layout_below="@+id/textView2"
-        android:layout_marginLeft="25dp"
+        android:layout_alignTop="@+id/textView1"
         android:src="@drawable/capture" />
+
+    <ImageButton
+        android:id="@+id/ImageButton01"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/imageButton1"
+        android:layout_toRightOf="@+id/imageButton1"
+        android:src="@drawable/upload" />
 
 </RelativeLayout>
