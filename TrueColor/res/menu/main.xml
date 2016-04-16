@@ -8,6 +8,7 @@
 		android:showAsAction="always"
 		android:actionProviderClass="android.widget.ShareActionProvider"
 	/>
+
 	<item
 		android:id="@+id/Save"
 		android:title="@string/Save"
@@ -21,6 +22,7 @@
 		android:icon="@drawable/about"
 		android:showAsAction="ifRoom"
 	/>
+	
 	<item
 		android:id="@+id/Help"
 		android:title="@string/Help"
