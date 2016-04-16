@@ -5,12 +5,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,9 +26,11 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final int REQUEST_SELECT_PICTURE = 2;
+	private String color;
 	ImageButton capture;
-	ImageButton save;
+	ImageButton load;
 	TextView showColorName;
 	TextView showColor;
 	ImageView image;
@@ -39,7 +46,7 @@ public class MainActivity extends Activity {
    
     
         capture = (ImageButton)findViewById(R.id.imageButton1);
-        save = (ImageButton)findViewById(R.id.SaveButton);
+        load = (ImageButton)findViewById(R.id.SaveButton);
         showColorName = (TextView)findViewById(R.id.showColorName);
         showColor = (TextView)findViewById(R.id.textView1);
         image = (ImageView)findViewById(R.id.imageView1);
@@ -47,6 +54,85 @@ public class MainActivity extends Activity {
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/font.otf");
         showColorName.setTypeface(font);
         
+        load.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+			
+				/* clear cache before action */
+				image.invalidate();
+				image.setImageDrawable(null);
+				image.refreshDrawableState();
+				image.destroyDrawingCache();
+				bitmap = null;
+				
+				Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+				startActivityForResult(intent,REQUEST_SELECT_PICTURE);
+				
+				
+			}
+		});
+         
+        image.setOnTouchListener(new View.OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent motionEvent) {
+				if(motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+					image.setDrawingCacheEnabled(true);
+					image.buildDrawingCache(true);
+					bitmap = image.getDrawingCache();
+					
+					int pixel = bitmap.getPixel((int)motionEvent.getX(),(int)motionEvent.getY());
+					
+					int r = Color.red(pixel);
+					int g = Color.green(pixel);
+					int b = Color.blue(pixel);
+					
+					float[] hsv = new float[3];
+					
+					/*hsv[0]  : Hue (0...360)
+					 * hsv[1] : Saturation (0...1)
+					 * hsv[2] : Value (0...1)
+					 */
+					
+					/* Hue < 18 = Oragnge
+					 * 	   < 48 = Brown
+					 * 	   < 64 = Yellow
+					 * 	   < 160 = Green
+					 * 	   < 210 = Cyan
+					 * 	   < 270 = Blue
+					 * 	   < 340 = Magenta
+					 */
+					
+					Color.RGBToHSV(r, g, b, hsv);
+					
+				/*	if(hsv[2] < 0.1){
+						color = "black";
+					}else if(hsv[2] > 0.9){
+						color = "white";
+					}
+					*/
+					
+					/*	if(hsv[0]>=5 && hsv[0]<=18){
+							color = "orange";
+					   }else if(hsv[0]>=18 && hsv[0]<=48){
+						   color = "brown";
+					   }
+					*/
+					showColor.setBackgroundColor(Color.rgb(r, g, b));
+					showColorName.setText(color);
+					
+					
+				}
+				return false;
+			}
+		});
+    
+    
+    
+    
+    
+    
     }
 
     @Override
@@ -96,6 +182,17 @@ public class MainActivity extends Activity {
 			photo = (Bitmap)extras.get("data");
 			image.setImageBitmap(photo);
 			
+		}
+		
+		if(requestCode==REQUEST_SELECT_PICTURE){
+			Uri selectedImage = data.getData();
+			String[] filepathColum = {MediaStore.Images.Media.DATA};
+			Cursor cursor = getContentResolver().query(selectedImage, filepathColum, null, null, null);
+			cursor.moveToFirst();
+			int columIndex = cursor.getColumnIndex(filepathColum[0]);
+			String picturePath = cursor.getString(columIndex);
+			cursor.close();
+			image.setImageBitmap(BitmapFactory.decodeFile(picturePath));
 		}
 		
 	}

@@ -31,7 +31,7 @@
         android:layout_alignRight="@+id/imageView1"
         android:layout_below="@+id/imageView1"
         android:text="       COLOR_NAME"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <ImageButton
         android:id="@+id/imageButton1"
