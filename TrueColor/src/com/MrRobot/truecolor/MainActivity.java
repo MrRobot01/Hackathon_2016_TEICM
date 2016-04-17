@@ -1,18 +1,27 @@
 package com.MrRobot.truecolor;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.text.DateFormat.Field;
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -43,7 +52,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-   
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED); 
     
         capture = (ImageButton)findViewById(R.id.imageButton1);
         load = (ImageButton)findViewById(R.id.SaveButton);
@@ -51,9 +60,7 @@ public class MainActivity extends Activity {
         showColor = (TextView)findViewById(R.id.textView1);
         image = (ImageView)findViewById(R.id.imageView1);
           
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/font.otf");
-        showColorName.setTypeface(font);
-        
+       
         load.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -73,62 +80,42 @@ public class MainActivity extends Activity {
 			}
 		});
          
-        image.setOnTouchListener(new View.OnTouchListener() {
+image.setOnTouchListener(new View.OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent motionEvent) {
+					
 				if(motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+			
 					image.setDrawingCacheEnabled(true);
 					image.buildDrawingCache(true);
 					bitmap = image.getDrawingCache();
-					
+
 					int pixel = bitmap.getPixel((int)motionEvent.getX(),(int)motionEvent.getY());
-					
+
 					int r = Color.red(pixel);
 					int g = Color.green(pixel);
 					int b = Color.blue(pixel);
 					
 					float[] hsv = new float[3];
 					
-					/*hsv[0]  : Hue (0...360)
-					 * hsv[1] : Saturation (0...1)
-					 * hsv[2] : Value (0...1)
-					 */
-					
-					/* Hue < 18 = Oragnge
-					 * 	   < 48 = Brown
-					 * 	   < 64 = Yellow
-					 * 	   < 160 = Green
-					 * 	   < 210 = Cyan
-					 * 	   < 270 = Blue
-					 * 	   < 340 = Magenta
-					 */
-					
-					
 					Colors c = new Colors();
 					color = c.getColor(r, g, b, hsv);
-					
-					
-					/*	if(hsv[0]>=5 && hsv[0]<=18){
-							color = "orange";
-					   }else if(hsv[0]>=18 && hsv[0]<=48){
-						   color = "brown";
-					   }
-					*/
-					showColor.setBackgroundColor(Color.rgb(r, g, b));
+				           
+					showColor.setBackgroundColor(Color.rgb(r,g,b));
 					showColorName.setText(color);
-					
-					
+		
 				}
+				
 				return false;
-			}
+				}
 		});
-    
-    
-    
-    
-    
-    
+
+
+        //if(!hasCamera()){
+       // 	capture.setEnabled(false);
+       // }
+        
     }
 
     @Override
@@ -137,7 +124,7 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		item = menu.findItem(R.id.Share);
 		shareActionProvider = (ShareActionProvider)item.getActionProvider();
-        setIntent("Hello");
+        setIntent("192.168.0.115:9090/truecolor/");
 
 		return  true;
 		
@@ -228,11 +215,11 @@ public class MainActivity extends Activity {
     		break;
     	case R.id.Help:
     		Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show();
-    		String helpMessage= "option 1: Capture image and tap the screen to get the color" +
+    		String message1= "option 1: Capture image and tap the screen to get the color" +
     				"\noption 2: load picture from file" +
     				"\noption 3: Share the app";
     		AlertDialog.Builder BBuilder =  new AlertDialog.Builder(MainActivity.this);
-			BBuilder.setMessage(helpMessage)
+			BBuilder.setMessage(message1)
 					.setCancelable(false)
 				    .setPositiveButton("OK",new DialogInterface.OnClickListener() {
 						
@@ -244,13 +231,33 @@ public class MainActivity extends Activity {
 							
 						}
 					});
+			AlertDialog alert1 = BBuilder.create();
+			alert1.setTitle("About");
+			alert1.show();
+    	
     		break;
     	case R.id.Save:
     		Toast.makeText(getApplicationContext(), "Save", Toast.LENGTH_SHORT).show();
-    		break;
+    		Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
+			Bitmap bit = Bitmap.createBitmap(image.getDrawingCache());
+			
+		try {
+
+			bit.compress(CompressFormat.PNG, 100, new FileOutputStream(Environment.getExternalStorageDirectory()+"/TRUE_COLOR.png"));
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+			
+			break;
+	}
+			return super.onOptionsItemSelected(item);
+
+ 
+    
     		
-    	}
+    	
         
-        return super.onOptionsItemSelected(item);
+       
     }
 }
